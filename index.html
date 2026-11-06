@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOTE :) Visual Index Board</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Gaegu:wght@400;700&family=Outfit:wght@400;500;600;700;800&family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- SVG Filter for Wavy / Hand-Drawn Fluffy Borders -->
+  <svg class="svg-filters" aria-hidden="true" width="0" height="0">
+    <defs>
+      <filter id="hand-drawn-border" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="3" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+      <filter id="fluffy-modal-border" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="4" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- In-page Toast Notification -->
+  <div id="toastNotification" class="toast-popup hidden" role="status" aria-live="polite">
+    <span id="toastMessage">알림</span>
+  </div>
+
+  <div class="app-container">
+    <!-- Top Sticky Header: NOTE :) -->
+    <header class="app-header">
+      <div class="header-left">
+        <h1 class="logo-title">NOTE :)</h1>
+      </div>
+      <div class="header-actions">
+        <button id="toggleEditModeBtn" class="pill-btn edit-toggle-btn" title="편집/삭제 모드 토글">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+          <span class="btn-label">수정</span>
+        </button>
+        <button id="resetDataBtn" class="pill-btn reset-btn" title="샘플 데이터 복원">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+          </svg>
+          <span class="btn-label">초기화</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Board Canvas -->
+    <main class="board-canvas" id="boardCanvas">
+      <div class="keyword-rows-container" id="keywordRowsContainer">
+        <!-- Keyword rows dynamically rendered here -->
+      </div>
+
+      <!-- Bottom Add Keyword Button -->
+      <div class="bottom-add-container">
+        <button id="addKeywordBtn" class="bottom-add-btn" title="키워드 추가" aria-label="키워드 추가">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL 1: Choose Record Type (무엇을 기록할까요?) -->
+  <div id="typeSelectModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="typeSelectTitle">
+    <div class="modal-box type-select-box">
+      <button class="modal-close-btn" id="closeTypeSelectBtn" aria-label="닫기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <div class="modal-header-tag">ADD CARD</div>
+      <h2 id="typeSelectTitle" class="modal-main-title">무엇을<br>기록할까요?</h2>
+      <p class="modal-sub-desc">유형을 선택해 주세요.</p>
+
+      <div class="type-selection-list">
+        <!-- Option: Link -->
+        <button class="type-option-item" data-type="link">
+          <div class="type-icon-wrapper link-icon-bg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+          </div>
+          <div class="type-text-content">
+            <strong class="type-title">LINK</strong>
+            <span class="type-desc">address</span>
+          </div>
+          <div class="type-chevron">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </div>
+        </button>
+
+        <!-- Option: Text -->
+        <button class="type-option-item" data-type="text">
+          <div class="type-icon-wrapper text-icon-bg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <line x1="21" y1="10" x2="3" y2="10"></line>
+              <line x1="21" y1="6" x2="3" y2="6"></line>
+              <line x1="21" y1="14" x2="3" y2="14"></line>
+              <line x1="14" y1="18" x2="3" y2="18"></line>
+            </svg>
+          </div>
+          <div class="type-text-content">
+            <strong class="type-title">TEXT</strong>
+            <span class="type-desc">memo</span>
+          </div>
+          <div class="type-chevron">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </div>
+        </button>
+
+        <!-- Option: Image -->
+        <button class="type-option-item" data-type="image">
+          <div class="type-icon-wrapper image-icon-bg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <rect x="3" y="3" width="18" height="18" rx="3" ry="3"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+          </div>
+          <div class="type-text-content">
+            <strong class="type-title">IMAGE</strong>
+            <span class="type-desc">reference</span>
+          </div>
+          <div class="type-chevron">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Create / Edit Card Form Modal -->
+  <div id="cardFormModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-box form-modal-box">
+      <button class="modal-close-btn" id="closeCardFormBtn" aria-label="닫기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <div class="modal-header-tag" id="cardFormHeaderTag">ADD CARD</div>
+      <h2 id="cardFormTitle" class="modal-main-title">카드 작성</h2>
+      
+      <form id="cardEntryForm" class="modal-form">
+        <input type="hidden" id="formRowId">
+        <input type="hidden" id="formCardId">
+        <input type="hidden" id="formCardType">
+
+        <!-- Form fields for Link -->
+        <div id="linkFields" class="form-section hidden">
+          <label class="form-label" for="linkTitleInput">카드 제목</label>
+          <input type="text" id="linkTitleInput" class="form-input" placeholder="사이트 이름">
+          
+          <label class="form-label" for="linkUrlInput">URL(* 필수)</label>
+          <input type="url" id="linkUrlInput" class="form-input" placeholder="https://example.com">
+        </div>
+
+        <!-- Form fields for Text -->
+        <div id="textFields" class="form-section hidden">
+          <label class="form-label" for="textTitleInput">카드 제목</label>
+          <input type="text" id="textTitleInput" class="form-input" placeholder="Title">
+          
+          <label class="form-label" for="textContentInput">내용</label>
+          <textarea id="textContentInput" class="form-textarea" rows="4" placeholder="자세한 아이디어, 메모 등을 입력해 주세요."></textarea>
+        </div>
+
+        <!-- Form fields for Image -->
+        <div id="imageFields" class="form-section hidden">
+          <label class="form-label">이미지 파일 첨부 또는 URL 입력</label>
+          <div class="file-upload-box">
+            <input type="file" id="imageFileInput" accept="image/*" class="file-input-hidden">
+            <label for="imageFileInput" class="file-upload-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <span>내 컴퓨터에서 선택하기</span>
+            </label>
+          </div>
+          <div class="form-divider"><span>또는</span></div>
+          <input type="url" id="imageUrlInput" class="form-input" placeholder="이미지 주소 (https://...)">
+          
+          <label class="form-label" for="imageCaptionInput">제목 (선택)</label>
+          <input type="text" id="imageCaptionInput" class="form-input" placeholder="비주얼 레퍼런스 설명">
+
+          <div id="imagePreviewArea" class="image-preview-container hidden">
+            <img id="imagePreviewImg" src="" alt="미리보기" class="image-preview-thumbnail">
+            <button type="button" id="removeImageBtn" class="pill-btn remove-img-btn">이미지 제거</button>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" id="cancelCardFormBtn">취소</button>
+          <button type="submit" class="btn-submit" id="saveCardSubmitBtn">저장</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Keyword Add / Edit Modal -->
+  <div id="keywordModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-box form-modal-box">
+      <button class="modal-close-btn" id="closeKeywordModalBtn" aria-label="닫기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <div class="modal-header-tag">KEYWORD</div>
+      <h2 id="keywordModalTitle" class="modal-main-title">키워드 작성</h2>
+      <p class="modal-sub-desc">새로운 키워드를 입력해 주세요.</p>
+      
+      <form id="keywordForm" class="modal-form">
+        <input type="hidden" id="keywordEditRowId">
+        <label class="form-label" for="keywordTitleInput">키워드 이름 (*필수)</label>
+        <input type="text" id="keywordTitleInput" class="form-input" placeholder="예: Design, AI, Memo" required>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" id="cancelKeywordModalBtn">취소</button>
+          <button type="submit" class="btn-submit" id="saveKeywordSubmitBtn">저장</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 4: Image Enlarged View Modal (matching modal.jpg) -->
+  <div id="imageZoomModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="fluffy-zoom-outer">
+      <button class="fluffy-zoom-close" id="closeImageZoomBtn" aria-label="닫기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <div class="fluffy-zoom-inner">
+        <div class="zoom-image-wrapper">
+          <img id="enlargedImage" src="" alt="확대 이미지" class="enlarged-img-content">
+          <div id="enlargedImagePlaceholder" class="enlarged-placeholder-icon hidden">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#9bb1d4" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="3" ry="3"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+          </div>
+        </div>
+        <div id="enlargedCaption" class="enlarged-caption-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 5: Text Memo Reader Modal -->
+  <div id="textViewModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-box text-view-box">
+      <button class="modal-close-btn" id="closeTextViewBtn" aria-label="닫기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <div class="modal-header-tag">MEMO CONTENT</div>
+      <h2 id="textViewTitle" class="text-modal-title">TEXT</h2>
+      <div class="text-modal-body" id="textViewContent"></div>
+      <div class="text-modal-footer">
+        <!-- <button id="editFromTextModalBtn" class="pill-btn edit-action-btn">내용 수정하기</button> -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 6: In-Page Custom Confirm Dialog (Canvas safe) -->
+  <div id="confirmModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-box confirm-box">
+      <div class="modal-header-tag">CONFIRMATION</div>
+      <h3 id="confirmModalTitle" class="confirm-title">확인</h3>
+      <p id="confirmModalMessage" class="confirm-message">계속 진행하시겠습니까?</p>
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" id="cancelConfirmBtn">취소</button>
+        <button type="button" class="btn-submit btn-danger" id="okConfirmBtn">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
