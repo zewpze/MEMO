@@ -10,26 +10,9 @@
       id: 'row-1',
       keyword: 'Keyword',
       cards: [
-        { id: 'c-1-1', type: 'link', title: '@link', url: 'https://github.com' },
+        { id: 'c-1-1', type: 'link', title: '@link', url: '#' },
         { id: 'c-1-2', type: 'text', title: 'TEXT', content: '아이디어 메모 및 아티클 요약:\n- 첫 번째 마일스톤 완료하기\n- 디자인 시안 검토 및 톤앤매너 피드백 적용\n- 모달 팝업 반응형 테스트 완료' },
-        { id: 'c-1-3', type: 'image', title: '미니멀 오브제 레퍼런스', imageUrl: SAMPLE_IMG_1 },
-        { id: 'c-1-4', type: 'image', title: '건축 아치 레퍼런스', imageUrl: SAMPLE_IMG_2 }
-      ]
-    },
-    {
-      id: 'row-2',
-      keyword: 'Keyword',
-      cards: [
-        { id: 'c-2-1', type: 'image', title: '비주얼 레퍼런스 1', imageUrl: SAMPLE_IMG_1 },
-        { id: 'c-2-2', type: 'text', title: 'TEXT', content: '프로젝트 개발 노트:\n상하 스크롤바 커스텀 및 좌우 가로 스크롤 숨김 처리 구현.\n모달 팝업 및 데이터 자동 저장 확인.' }
-      ]
-    },
-    {
-      id: 'row-3',
-      keyword: 'Keyword',
-      cards: [
-        { id: 'c-3-1', type: 'image', title: '비주얼 레퍼런스 2', imageUrl: SAMPLE_IMG_2 },
-        { id: 'c-3-2', type: 'text', title: 'TEXT', content: '영감 수집 노트:\n자연스러운 크림 톤과 은은한 라벤더 컬러의 조화.\n손그림 느낌의 물결 테두리 필터 적용.' }
+        { id: 'c-1-3', type: 'image', title: '미니멀 오브제 레퍼런스', imageUrl: "./sticker01.svg" },
       ]
     }
   ];
@@ -313,7 +296,7 @@
       // 3. Right Add Button (+ button at the end of the row)
       var addCardBtn = document.createElement('button');
       addCardBtn.className = 'row-add-btn';
-      addCardBtn.title = '카드 추가 (링크/이미지/텍스트)';
+      addCardBtn.title = '카드 추가';
       addCardBtn.setAttribute('aria-label', '카드 추가');
       addCardBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>';
       addCardBtn.addEventListener('click', function() {
@@ -342,7 +325,7 @@
 
   // Action: Reset Data
   resetDataBtn.addEventListener('click', function() {
-    showCustomConfirm('데이터 초기화', '기본 샘플 데이터로 복원하시겠습니까? 현재 변경사항은 초기화됩니다.', function() {
+    showCustomConfirm('데이터 초기화', '초기화 하시겠습니까? 현재 변경사항은 초기화됩니다.', function() {
       boardData = JSON.parse(JSON.stringify(DEFAULT_BOARD));
       saveData();
       renderBoard();
